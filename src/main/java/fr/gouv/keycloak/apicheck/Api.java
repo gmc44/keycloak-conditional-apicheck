@@ -22,7 +22,7 @@ public class Api
    
     public Boolean postcheck(String rootUrl, String apiTokenid, String apiToken, String path, StringEntity data) throws ClientProtocolException, IOException
     {
-        ServicesLogger.LOGGER.info("CALL api = "+rootUrl+" POST path = "+path+" data = "+data);
+        ServicesLogger.LOGGER.debug("CALL api = "+rootUrl+" POST path = "+path+" data = "+data);
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpPost request = new HttpPost(rootUrl + path);
         if (apiTokenid != null) {
