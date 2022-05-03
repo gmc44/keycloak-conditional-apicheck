@@ -37,10 +37,10 @@ With that, the final authentication sub-flow for performing the conditional pass
   - Execution: "MFA Login" (Type: Authenticator; Requirement: Required)
 
 Configuration for "Condition - Check API":
-![configuration]("doc/Condition - API Check - IpIsNotSecure.png?raw=true")
+![configuration](doc/Condition%20-%20API%20Check%20-%20IpIsNotSecure.png?raw=true "configuration")
 
 ## Api example
-![swagger]("doc/Condition - API Check - Swagger.png?raw=true")
+![swagger](doc/Condition%20-%20API%20Check%20-%20Swagger.png?raw=true "swagger")
 
 see https://github.com/gmc44/mfalogin-api
 
