@@ -3,6 +3,7 @@ package fr.gouv.keycloak.apicheck;
 import static fr.gouv.keycloak.apicheck.ApiCheckConstants.*;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -135,6 +136,8 @@ public class ApiCheckAuthenticator implements ConditionalAuthenticator {
 
         try {
             res=api.postcheck(ApiRootUrl, ApiTokenid, ApiToken, ApiCheckPath, new StringEntity(data,ContentType.APPLICATION_JSON), hardTimeout);
+        } catch (SocketException e) {
+            logger.warn("hardTimeout reached : "+ApiRootUrl+ApiCheckPath);
         } catch (UnsupportedCharsetException e) {
             logger.warn("Unsupported Charset : "+e.toString());
         } catch (ClientProtocolException e) {

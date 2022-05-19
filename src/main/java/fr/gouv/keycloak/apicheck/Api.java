@@ -41,7 +41,6 @@ public class Api
             public void run() {
                 if (request != null) {
                     request.abort();
-                    logger.warn(msg + " : hardTimeout reached");
                 }
             }
         };
