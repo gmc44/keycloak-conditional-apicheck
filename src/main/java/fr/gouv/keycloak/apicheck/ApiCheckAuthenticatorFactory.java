@@ -55,6 +55,18 @@ public class ApiCheckAuthenticatorFactory
         property.setHelpText("Enter your Api Check PATH");
         configProperties.add(property);
         property = new ProviderConfigProperty();
+        property.setName(ApiCheckConstants.CONF_API_HARD_TIMEOUT);
+        property.setLabel("Api check Hard Timeout (s) - default 2s");
+        property.setType(ProviderConfigProperty.STRING_TYPE);
+        property.setHelpText("While setting timeouts on establishing the HTTP connection and not receiving data is very useful, sometimes we need to set a hard timeout for the entire request");
+        configProperties.add(property);
+        property = new ProviderConfigProperty();
+        property.setName(ApiCheckConstants.CONF_API_HARD_TIMEOUT_DEFAULT_RESPONSE);
+        property.setLabel("Hard Timeout Default Response is True (ON) or False (OFF)");
+        property.setType(ProviderConfigProperty.BOOLEAN_TYPE);
+        property.setHelpText("When Timeout is reached, return True (ON) or False (OFF)");
+        configProperties.add(property);
+        property = new ProviderConfigProperty();
         property.setName(ApiCheckConstants.CONF_API_HEADERS_PARAMETERS);
         property.setLabel("Headers to check");
         property.setType(ProviderConfigProperty.MAP_TYPE);

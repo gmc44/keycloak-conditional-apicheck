@@ -8,7 +8,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.keycloak.services.ServicesLogger;
+import java.util.TimerTask;
+import java.util.Timer;
+import org.jboss.logging.Logger;
 
 public class Api
 {
@@ -19,16 +21,32 @@ public class Api
      * @throws IOException
      * @throws ClientProtocolException
      */
-   
-    public Boolean postcheck(String rootUrl, String apiTokenid, String apiToken, String path, StringEntity data) throws ClientProtocolException, IOException
+    
+    private static Logger logger = Logger.getLogger(ApiCheckAuthenticator.class);
+
+    public Boolean postcheck(String rootUrl, String apiTokenid, String apiToken, String path, StringEntity data, int hardTimeout) throws ClientProtocolException, IOException
     {
-        ServicesLogger.LOGGER.debug("CALL api = "+rootUrl+" POST path = "+path+" data = "+data);
+        String msg = "CALL api = "+rootUrl+" POST path = "+path;
+        logger.debug(msg);
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpPost request = new HttpPost(rootUrl + path);
         if (apiTokenid != null) {
             request.addHeader(apiTokenid, apiToken);
         }
         request.setEntity(data);
+
+        // hardTimeout
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                if (request != null) {
+                    request.abort();
+                    logger.warn(msg + " : hardTimeout reached");
+                }
+            }
+        };
+        new Timer(true).schedule(task, hardTimeout * 1000);
+
         HttpResponse response = httpClient.execute(request);
         return (response.getStatusLine().getStatusCode() == 200);
     }
