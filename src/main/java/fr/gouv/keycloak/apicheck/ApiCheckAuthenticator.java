@@ -134,17 +134,17 @@ public class ApiCheckAuthenticator implements ConditionalAuthenticator {
             return res;
         }
 
-        String logReturnDefault = "RETURN Default ("+res+"): ";
+        String logReturnDefault = "RETURN Default ("+res+"): "+ApiRootUrl+ApiCheckPath+" ";
         try {
             res=api.postcheck(ApiRootUrl, ApiTokenid, ApiToken, ApiCheckPath, new StringEntity(data,ContentType.APPLICATION_JSON), hardTimeout);
         } catch (SocketException e) {
-            logger.warn(logReturnDefault+"hardTimeout reached : "+ApiRootUrl+ApiCheckPath);
+            logger.warn(logReturnDefault+"HardTimeout Reached");
         } catch (UnsupportedCharsetException e) {
             logger.warn(logReturnDefault+"Unsupported Charset : "+e.toString());
         } catch (ClientProtocolException e) {
             logger.warn(logReturnDefault+"Client Protocol Error : "+e.toString());
         } catch (IOException e) {
-            logger.warn(logReturnDefault+"Call API Error : "+e.toString());
+            logger.warn(logReturnDefault+"Call API IOError : "+e.toString());
         } catch (Exception e) {
             logger.warn(logReturnDefault+"Call API Error : "+e.toString());
         };
