@@ -42,6 +42,11 @@ Configuration for "Condition - Check API":
 ## Api example
 ![swagger](doc/Condition%20-%20API%20Check%20-%20Swagger.png?raw=true "swagger")
 
+Response should be :
+-200 : True
+-401 : False
+-other : default
+
 see https://github.com/gmc44/mfalogin-api
 
 ## Release History
