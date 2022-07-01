@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -110,7 +111,8 @@ public class ApiCheckAuthenticator implements ConditionalAuthenticator {
         // UserAttributes
         userattrs.forEach(userattrsMap -> {
             try {
-                String userattrsValue = user.getFirstAttribute(userattrsMap.get("key"));
+                // String userattrsValue = user.getFirstAttribute(userattrsMap.get("key"));
+                String userattrsValue = user.getAttributeStream(userattrsMap.get("key")).collect(Collectors.joining("##"));;
                 values.put(userattrsMap.get("value"), userattrsValue);
                 logger.debug("User Attribute : "+userattrsMap.get("key")+" = "+userattrsValue);
             } catch (NullPointerException npe) {
