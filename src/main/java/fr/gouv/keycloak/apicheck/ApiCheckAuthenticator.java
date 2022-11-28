@@ -18,17 +18,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.authenticators.conditional.ConditionalAuthenticator;
 import org.keycloak.models.AuthenticatorConfigModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
+import org.keycloak.services.ServicesLogger;
 
 public class ApiCheckAuthenticator implements ConditionalAuthenticator {
-
-    private static Logger logger = Logger.getLogger(ApiCheckAuthenticator.class);
+    
+    // logger using keyloak.services.ServicesLogger
+    private static final ServicesLogger logger = ServicesLogger.LOGGER;
     
     private Api         api = new Api();
 
