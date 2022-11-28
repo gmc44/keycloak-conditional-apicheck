@@ -30,6 +30,8 @@ public class ApiCheckAuthenticator implements ConditionalAuthenticator {
     
     // logger using keyloak.services.ServicesLogger
     private static final ServicesLogger logger = ServicesLogger.LOGGER;
+
+    String Module = "ApiCheck : ";
     
     private Api         api = new Api();
 
@@ -45,7 +47,7 @@ public class ApiCheckAuthenticator implements ConditionalAuthenticator {
             hardTimeout = Integer.parseInt(confHardTimeout);
         } catch (NullPointerException npe) {
             hardTimeout = defaultHardTimeout;
-            logger.warn("failed to read Timeout : "+confHardTimeout);
+            logger.warn(Module+"failed to read Timeout : "+confHardTimeout);
         }
 
         if (hardTimeout > 0) {
@@ -73,8 +75,8 @@ public class ApiCheckAuthenticator implements ConditionalAuthenticator {
         //Get User
         UserModel user  = context.getUser();
                 
-        logger.debug("Headers="+ApiHeadersParameters);
-        logger.debug("UserAttribute="+ApiUserAttrsParameters);
+        logger.debug(Module+"Headers="+ApiHeadersParameters);
+        logger.debug(Module+"UserAttribute="+ApiUserAttrsParameters);
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -102,10 +104,13 @@ public class ApiCheckAuthenticator implements ConditionalAuthenticator {
         headers.forEach(headerMap -> {
                 try {
                     String headerValue = context.getHttpRequest().getHttpHeaders().getHeaderString(headerMap.get("key"));
+                    if (headerValue == null) {
+                        headerValue = "";
+                    }
                     values.put(headerMap.get("value"), headerValue);
-                    logger.debug("Header : "+headerMap.get("key")+" = "+headerValue);
+                    logger.debug(Module+"Header : "+headerMap.get("key")+" = "+headerValue);
                 } catch (NullPointerException npe) {
-                    logger.warn("Failed to read Header : "+headerMap.get("key"));
+                    logger.warn(Module+"Failed to read Header : "+headerMap.get("key"));
                 }
         });
 
@@ -113,11 +118,14 @@ public class ApiCheckAuthenticator implements ConditionalAuthenticator {
         userattrs.forEach(userattrsMap -> {
             try {
                 // String userattrsValue = user.getFirstAttribute(userattrsMap.get("key"));
-                String userattrsValue = user.getAttributeStream(userattrsMap.get("key")).collect(Collectors.joining("##"));;
+                String userattrsValue = user.getAttributeStream(userattrsMap.get("key")).collect(Collectors.joining("##"));
+                if (userattrsValue == null) {
+                    userattrsValue = "";
+                }
                 values.put(userattrsMap.get("value"), userattrsValue);
-                logger.debug("User Attribute : "+userattrsMap.get("key")+" = "+userattrsValue);
+                logger.debug(Module+"User Attribute : "+userattrsMap.get("key")+" = "+userattrsValue);
             } catch (NullPointerException npe) {
-                logger.warn("Failed to read User Attribute : "+userattrsMap.get("key"));
+                logger.warn(Module+"Failed to read User Attribute : "+userattrsMap.get("key"));
             }
         });
         
@@ -131,9 +139,9 @@ public class ApiCheckAuthenticator implements ConditionalAuthenticator {
         String data;
         try {
             data = mapper.writeValueAsString(values);
-            logger.debug("values="+data);
+            logger.debug(Module+"values="+data);
         } catch (JsonProcessingException e1) {
-            logger.warn("Unable to map values, return default : "+res);
+            logger.warn(Module+"Unable to map values, return default : "+res);
             return res;
         }
 
@@ -141,15 +149,15 @@ public class ApiCheckAuthenticator implements ConditionalAuthenticator {
         try {
             res=api.postcheck(ApiRootUrl, ApiTokenid, ApiToken, ApiCheckPath, new StringEntity(data,ContentType.APPLICATION_JSON), hardTimeout);
         } catch (SocketException e) {
-            logger.warn(logReturnDefault+"HardTimeout Reached");
+            logger.warn(Module+logReturnDefault+"HardTimeout Reached");
         } catch (UnsupportedCharsetException e) {
-            logger.warn(logReturnDefault+"Unsupported Charset : "+e.toString());
+            logger.warn(Module+logReturnDefault+"Unsupported Charset : "+e.toString());
         } catch (ClientProtocolException e) {
-            logger.warn(logReturnDefault+"Client Protocol Error : "+e.toString());
+            logger.warn(Module+logReturnDefault+"Client Protocol Error : "+e.toString());
         } catch (IOException e) {
-            logger.warn(logReturnDefault+"Call API IOError : "+e.toString());
+            logger.warn(Module+logReturnDefault+"Call API IOError : "+e.toString());
         } catch (Exception e) {
-            logger.warn(logReturnDefault+"Call API Error : "+e.toString());
+            logger.warn(Module+logReturnDefault+"Call API Error : "+e.toString());
         };
 
         return res; //conditional : return true when condition is needed
