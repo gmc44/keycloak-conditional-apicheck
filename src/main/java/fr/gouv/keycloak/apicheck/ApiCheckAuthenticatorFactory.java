@@ -78,6 +78,12 @@ public class ApiCheckAuthenticatorFactory
         property.setType(ProviderConfigProperty.MAP_TYPE);
         property.setHelpText("ex : mail");
         configProperties.add(property);
+        property = new ProviderConfigProperty();
+        property.setName(ApiCheckConstants.CONF_API_AUTHNOTES_PARAMETERS);
+        property.setLabel("Auth Notes to check");
+        property.setType(ProviderConfigProperty.MAP_TYPE);
+        property.setHelpText("ex : requestreponse");
+        configProperties.add(property);
     }
 
     @Override

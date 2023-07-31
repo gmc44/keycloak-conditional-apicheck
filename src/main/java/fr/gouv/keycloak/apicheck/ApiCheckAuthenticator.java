@@ -72,11 +72,13 @@ public class ApiCheckAuthenticator implements ConditionalAuthenticator {
         String ApiCheckHardTimeoutDefaultResponse = config.getConfig().get(CONF_API_HARD_TIMEOUT_DEFAULT_RESPONSE);
         String ApiHeadersParameters = config.getConfig().get(CONF_API_HEADERS_PARAMETERS);
         String ApiUserAttrsParameters = config.getConfig().get(CONF_API_USERATTRS_PARAMETERS);
+        String ApiAuthNotesParameters = config.getConfig().get(CONF_API_AUTHNOTES_PARAMETERS);
         //Get User
         UserModel user  = context.getUser();
                 
         logger.debug(Module+"Headers="+ApiHeadersParameters);
         logger.debug(Module+"UserAttribute="+ApiUserAttrsParameters);
+        logger.debug(Module+"AuthNotes="+ApiAuthNotesParameters);
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -95,6 +97,14 @@ public class ApiCheckAuthenticator implements ConditionalAuthenticator {
             userattrs = new ArrayList<>();
             e1.printStackTrace();
         }
+
+        List<Map<String, String>> authnotes;
+        try {
+            authnotes = mapper.readValue(ApiAuthNotesParameters, new TypeReference<List<Map<String,String>>>() {});
+        } catch (JsonProcessingException e1) {
+            authnotes = new ArrayList<>();
+            e1.printStackTrace();
+        }
         
 
         // Api Data Payload
@@ -102,32 +112,47 @@ public class ApiCheckAuthenticator implements ConditionalAuthenticator {
 
         // Headers
         headers.forEach(headerMap -> {
-                try {
-                    String headerValue = context.getHttpRequest().getHttpHeaders().getHeaderString(headerMap.get("key"));
-                    if (headerValue == null) {
-                        headerValue = "";
-                    }
-                    values.put(headerMap.get("value"), headerValue);
-                    logger.debug(Module+"Header : "+headerMap.get("key")+" = "+headerValue);
-                } catch (NullPointerException npe) {
-                    logger.warn(Module+"Failed to read Header : "+headerMap.get("key"));
+            try {
+                String headerValue = context.getHttpRequest().getHttpHeaders().getHeaderString(headerMap.get("key"));
+                if (headerValue == null) {
+                    headerValue = "";
                 }
+                values.put(headerMap.get("value"), headerValue);
+                logger.debug(Module+"Header : "+headerMap.get("key")+" = "+headerValue);
+            } catch (NullPointerException npe) {
+                logger.warn(Module+"Failed to read Header : "+headerMap.get("key"));
+            }
         });
 
         // UserAttributes
         userattrs.forEach(userattrsMap -> {
             try {
-                // String userattrsValue = user.getFirstAttribute(userattrsMap.get("key"));
-                String userattrsValue = user.getAttributeStream(userattrsMap.get("key")).collect(Collectors.joining("##"));
-                if (userattrsValue == null) {
-                    userattrsValue = "";
+                // String userattrValue = user.getFirstAttribute(userattrsMap.get("key"));
+                String userattrValue = user.getAttributeStream(userattrsMap.get("key")).collect(Collectors.joining("##"));
+                if (userattrValue == null) {
+                    userattrValue = "";
                 }
-                values.put(userattrsMap.get("value"), userattrsValue);
-                logger.debug(Module+"User Attribute : "+userattrsMap.get("key")+" = "+userattrsValue);
+                values.put(userattrsMap.get("value"), userattrValue);
+                logger.debug(Module+"User Attribute : "+userattrsMap.get("key")+" = "+userattrValue);
             } catch (NullPointerException npe) {
                 logger.warn(Module+"Failed to read User Attribute : "+userattrsMap.get("key"));
             }
         });
+
+        // AuthNotes
+        authnotes.forEach(authnotesMap -> {
+            try {
+                String authnoteValue = context.getAuthenticationSession().getAuthNote(authnotesMap.get("key"));
+                if (authnoteValue == null) {
+                    authnoteValue = "";
+                }
+                values.put(authnotesMap.get("value"), authnoteValue);
+                logger.debug(Module+"AuthNote : "+authnotesMap.get("key")+" = "+authnoteValue);
+            } catch (NullPointerException npe) {
+                logger.warn(Module+"Failed to read Note : "+authnotesMap.get("key"));
+            }
+        });
+            
         
         // Initialize Default Response
         Boolean res = Boolean.valueOf(ApiCheckHardTimeoutDefaultResponse);
